@@ -8,13 +8,19 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 
+if __name__ == "__main__":
+    currentUser = ''
+
 #Start menu
 class startMenu(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         startwindow.title("PyTTT")
         self.config(bg="white")
-        self.logo = ImageTk.PhotoImage(Image.open("Logo.pgm"))
+        try:
+            self.logo = ImageTk.PhotoImage(Image.open("./lib/Logo.pgm"))
+        except FileNotFoundError:
+            self.logo = ImageTk.PhotoImage(Image.open("Logo.pgm"))
         logoLabel = tk.Label(self, image=self.logo, bg="white")
         self.promptUpper = tk.Label(self, text="PyTTT", anchor="c", font="TkFixedFont 18 bold", bg="white")
         self.buttonSingle = tk.Button(self, text="Single Player", font="TkFixedFont 12", bg="white", command = self.playSingle)
@@ -39,7 +45,7 @@ class startMenu(tk.Frame):
         game.multiPlayer()
         
     def profile(self):
-        if currentUser != 'None':
+        if currentUser != '':
             profile.curretUser()
         else:
             global loginwindow
@@ -51,9 +57,7 @@ class startMenu(tk.Frame):
         startwindow.destroy()
         raise SystemExit
 
-
-if __name__ == "__main__":
-    startwindow = tk.Tk()
-    startMenu(startwindow).pack(fill="both", expand=True)
-    startwindow.mainloop()
+startwindow = tk.Tk()
+startMenu(startwindow).pack(fill="both", expand=True)
+startwindow.mainloop()
 
