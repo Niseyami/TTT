@@ -1,4 +1,4 @@
-##PyTTT by Sasith De Abrew
+##PyTTT by A Person
 ##Made from Python Version 3.7.0
 ##Do not edit unless you know what your are doing
 
