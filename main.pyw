@@ -10,11 +10,8 @@ from PIL import ImageTk, Image
 from lib.StartMenu import startMenu
 from lib.Login import loginMenu
 
-
 currentUser = ''
 
-
-global startwindow
 startwindow = tk.Tk()
 startMenu(startwindow).pack(fill="both", expand=True)
 startwindow.mainloop()
