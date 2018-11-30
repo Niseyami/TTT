@@ -93,7 +93,7 @@ class loginMenu(tk.Frame):
         print('placeholder')
 
 
-if __name__ == "__main__":
-    loginwindow = tk.Tk()
-    loginMenu(loginwindow).pack(fill="both", expand=True)
-    loginwindow.mainloop()
+
+loginwindow = tk.Tk()
+loginMenu(loginwindow).pack(fill="both", expand=True)
+loginwindow.mainloop()
