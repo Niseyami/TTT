@@ -277,8 +277,8 @@ class profileMenu(tk.Frame):
             widget.destroy()
         self.title = tk.Label(self, text="Change your username", bg="white", font="TkFixedFont 16 bold")
         self.passwordSubtitle = tk.Label(self, text="Current password:", bg="white")
-        self.passwordConfirmSubtitle = tk.Label(self, text="Confirm password:", bg="white")
         self.passwordInputForm = tk.Entry(self, show="*")
+        self.passwordConfirmSubtitle = tk.Label(self, text="Confirm password:", bg="white")
         self.passwordConfirmForm = tk.Entry(self, show="*")
         self.passwordSubmitButton = tk.Button(self, text="Submit", bg="white", command=self.changeuser)
         self.title.grid(column=0, row=0, sticky="news", columnspan=2)
@@ -352,6 +352,50 @@ class profileMenu(tk.Frame):
         self.quitButton.grid(column=0, row=2)
     
     def changeaccountpassword(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.title = tk.Label(self, text="Change your password", bg="white", font="TkFixedFont 16 bold")
+        self.passwordSubtitle = tk.Label(self, text="Current password:", bg="white")
+        self.passwordConfirmSubtitle = tk.Label(self, text="Confirm password:", bg="white")
+        self.passwordInputForm = tk.Entry(self, show="*")
+        self.passwordConfirmForm = tk.Entry(self, show="*")
+        self.passwordSubmitButton = tk.Button(self, text="Submit", bg="white", command=self.changepassword)
+        self.title.grid(column=0, row=0, sticky="news", columnspan=2)
+        self.passwordSubtitle.grid(column=0, row=1)
+        self.passwordInputForm.grid(column=1, row=1)
+        self.passwordConfirmSubtitle.grid(column=0, row=2)
+        self.passwordConfirmForm.grid(column=1, row=2)
+        self.passwordSubmitButton.grid(column=0, row=3, sticky="news", columnspan=2)
+
+    def changepassword(self):
+        if self.passwordInputForm.get() == self.passwordConfirmForm.get():
+            DataLocation = ("./usr/%s/AccountDetails.dat" % currentUser)
+            with open(DataLocation, "rb+") as UsrData:
+                Details = pickle.load(UsrData)
+                UsrData.close()
+            if Details[1] == hashlib.sha3_512(self.passwordInputForm.get().encode("utf-8")).hexdigest() and Details[1] == hashlib.sha3_512(self.passwordConfirmForm.get().encode("utf-8")).hexdigest():
+                for widget in self.winfo_children():
+                    widget.destroy()
+                self.title = tk.Label(self, text="Change your password", bg="white", font="TkFixedFont 16 bold")
+                self.newPasswordSubtitle = tk.Label(self, text="New password:", bg="white")
+                self.newPasswordForm = tk.Entry(self, show="*")
+                self.passwordConfirmSubtitle = tk.Label(self, text="Confirm password:", bg="white")
+                self.passwordConfirmForm = tk.Entry(self, show="0")
+                self.passwordChangeConfirm = tk.Button(self, text="Confirm Changes", bg="white", command=self.confirmpasswordchange)
+                self.title.grid(column=0, row=0, columnspan=2)
+                self.newPasswordSubtitle.grid(column=0, row=1)
+                self.newPasswordForm.grid(column=1, row=1)
+                self.passwordConfirmSubtitle.grid(column=0, row=2)
+                self.passwordConfirmForm.grid(column=1, row=2)
+                self.passwordChangeConfirm.grid(column=0, row=3, columnspan=2)
+            else:
+                self.passIncorrect = tk.Label(self, text="Password is incorrect", bg="red")
+                self.passIncorrect.grid(column=0, row=4, sticky="news", columnspan=2)
+        else:
+            self.passNotMatch = tk.Label(self, text="Passwords do not match", bg="red")
+            self.passNotMatch.grid(column=0, row=5, sticky="news", columnspan=2)
+
+    def confirmpasswordchange(self):
         print("placeholder")
         
 startwindow = tk.Tk()
