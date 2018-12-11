@@ -9,14 +9,13 @@
 
 #Imports
 import tkinter as tk
+from tkinter import filedialog
+import PIL
 from PIL import ImageTk, Image
 import hashlib
 import pickle
 import os
 import time
-
-#Defining vars
-currentUser = ''
 
 #Start menu
 class startMenu(tk.Frame):
@@ -24,7 +23,7 @@ class startMenu(tk.Frame):
         tk.Frame.__init__(self, parent)
         startwindow.title("PyTTT")
         self.config(bg="white")
-        self.logo = ImageTk.PhotoImage(Image.open("lib/Logo.pgm"))
+        self.logo = ImageTk.PhotoImage(Image.open("assests/Logo.pgm"))
         logoLabel = tk.Label(self, image=self.logo, bg="white")
         self.promptUpper = tk.Label(self, text="PyTTT", anchor="c", font="TkFixedFont 18 bold", bg="white")
         self.buttonSingle = tk.Button(self, text="Single Player", font="TkFixedFont 12", bg="white", command = self.playSingle)
@@ -57,7 +56,7 @@ class startMenu(tk.Frame):
         #game.multiPlayer()
         
     def profile(self):
-        if currentUser != '':
+        if currentUser != "":
             global profilewindow
             profilewindow = tk.Toplevel()
             profileMenu(profilewindow).pack(fill="both", expand=True)
@@ -80,8 +79,8 @@ class loginMenu(tk.Frame):
         self.config(bg="white")
         self.title = tk.Label(self, text="PyTTT Login", font="TkFixedFont 14", bg="white", anchor="n")
         self.subtitle = tk.Label(self, text="Please register or log in", font="TkFixedFont 12", bg="white", anchor="n")
-        self.loginButton = tk.Button(self, text="Login", font="TkFixedFont 12", command=self.login)
-        self.registerButton = tk.Button(self, text="register", font="TkFixedFont 12", command=self.register)
+        self.loginButton = tk.Button(self, text="Login", font="TkFixedFont 12", bg="white", command=self.login)
+        self.registerButton = tk.Button(self, text="register", font="TkFixedFont 12", bg="white", command=self.register)
         self.title.pack(side="top", anchor="n")
         self.subtitle.pack(side="top", anchor="n")
         self.loginButton.pack(side="left", padx=20, pady=10)
@@ -110,23 +109,23 @@ class loginMenu(tk.Frame):
         self.credentialsSubmitButton.grid(column=1, row=5, sticky="s")
 
     def registeraccount(self):
-        if len(self.userInputForm.get()) == 0 or self.userInputForm.get() == ' ':
+        if len(self.userInputForm.get()) == 0 or self.userInputForm.get() == " ":
             self.usernameWarning = tk.Label(self, text="Username cannot be empty", bg="red")
             self.usernameWarning.grid(column=1, row=6, sticky="s")
-        if len(self.passwordInputForm.get()) == 0 or self.passwordInputForm.get() == ' ':
+        if len(self.passwordInputForm.get()) == 0 or self.passwordInputForm.get() == " ":
             self.passwordWarning = tk.Label(self, text="Password cannot be empty", bg="red")
             self.passwordWarning.grid(column=1, row=7, sticky="s")
-        if len(self.userInputForm.get()) > 0 and self.userInputForm.get() != ' ':
-            if len(self.passwordInputForm.get()) > 0 and self.passwordInputForm.get() != ' ':
+        if len(self.userInputForm.get()) > 0 and self.userInputForm.get() != " ":
+            if len(self.passwordInputForm.get()) > 0 and self.passwordInputForm.get() != " ":
                 self.initializeaccount() 
 
     def initializeaccount(self):
         usrvar = self.userInputForm.get()
         passvar = self.passwordInputForm.get()
-        usrDirectory = ("./usr/%s" % usrvar)
+        usrDirectory = (f"./usr/{usrvar}")
         try:
             os.mkdir(usrDirectory)
-            passvarHashed = hashlib.sha3_512(passvar.encode('utf-8')).hexdigest()
+            passvarHashed = hashlib.sha3_512(passvar.encode("utf-8")).hexdigest()
             global currentUser
             currentUser = str(usrvar)
             del usrvar
@@ -135,9 +134,9 @@ class loginMenu(tk.Frame):
             initLoses = 0
             initDraws = 0
             initAccountType = 0
-            initProfilePicture = "./lib/Blank-Profile-Picture.pgm"
+            initProfilePicture = "./assets/Blank-Profile-Picture.pgm"
             usrVariables = [currentUser, passvarHashed, initWins, initLoses, initDraws, initAccountType, initProfilePicture]
-            DataLocation = ("./usr/%s/AccountDetails.dat" % currentUser)
+            DataLocation = (f"./usr/{currentUser}/AccountDetails.dat")
             with open(DataLocation, "wb+") as data:
                 pickle.dump(usrVariables, data, 0)
                 data.close()
@@ -181,7 +180,7 @@ class loginMenu(tk.Frame):
     def loginusersubmit(self):
         global usrvar
         usrvar = self.userInputForm.get()
-        DataLocation = ("./usr/%s" % usrvar)
+        DataLocation = (f"./usr/{usrvar}")
         if len(usrvar) > 0:
             try:
                 os.mkdir(DataLocation)
@@ -192,7 +191,7 @@ class loginMenu(tk.Frame):
                 for widget in self.winfo_children():
                     widget.destroy()                  
                 self.config(bg="white")
-                self.title = tk.Label(self, text="Welcome %s" % usrvar, font="TkFixedFont 14", bg="white", anchor="n")
+                self.title = tk.Label(self, text=f"Welcome {usrvar}", font="TkFixedFont 14", bg="white", anchor="n")
                 self.subtitle = tk.Label(self, text="Enter your password:", font="TkFixedFont 12", bg="white", anchor="n")
                 self.passwordInputForm = tk.Entry(self, show="*")
                 self.passwordInputForm.config(highlightbackground="white", highlightthickness=0)
@@ -207,11 +206,11 @@ class loginMenu(tk.Frame):
             
     def loginpasswordsubmit(self):
         passvar = self.passwordInputForm.get()
-        DataLocation = ("./usr/%s/AccountDetails.dat" % usrvar)
+        DataLocation = (f"./usr/{usrvar}/AccountDetails.dat")
         with open(DataLocation, "rb+") as UsrData:
             logonDetails = pickle.load(UsrData)
             UsrData.close()
-        if hashlib.sha3_512(passvar.encode('utf-8')).hexdigest() == logonDetails[1]:
+        if hashlib.sha3_512(passvar.encode("utf-8")).hexdigest() == logonDetails[1]:
             global currentUser
             currentUser = usrvar
             for widget in self.winfo_children():
@@ -227,7 +226,7 @@ class loginMenu(tk.Frame):
             accountType = logonDetails[5]
             profilePicture = logonDetails[6]
             self.config(bg="white")
-            self.title = tk.Label(self, text="Welcome %s" % currentUser, font="TkFixedFont 14", bg="white", anchor="n")
+            self.title = tk.Label(self, text=f"Welcome {currentUser}", font="TkFixedFont 14", bg="white", anchor="n")
             self.subtitle = tk.Label(self, text="Your Infomation has been accepted", font="TkFixedFont 12", bg="white", anchor="n")
             self.subsubtitle = tk.Label(self, text="You may close this window", font="TkFixedFont 12", bg="white", anchor="n")
             self.closeWindowButton = tk.Button(self, text="Close", bg="white", font="TkFixedFont 12", command=loginwindow.destroy)
@@ -244,11 +243,11 @@ class profileMenu(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.config(bg="white")
-        profilewindow.title("%s's Profile" % currentUser)
-        self.title = tk.Label(self, text="Welcome %s" % currentUser, font="TkFixedFont 18 bold", bg="white")
+        profilewindow.title(f"{currentUser}'s Profile")
+        self.title = tk.Label(self, text=f"Welcome {currentUser}", font="TkFixedFont 18 bold", bg="white")
         self.logo = ImageTk.PhotoImage(Image.open(profilePicture))
         self.logoLabel = tk.Label(self, image=self.logo, bg="white")
-        self.statsDisplay = tk.Label(self, text="Wins: %s\nLoses: %s\nDraws: %s" % (Wins, Loses, Draws), font="TkFixedFont 15 bold", bg="white")
+        self.statsDisplay = tk.Label(self, text=f"Wins: {Wins}\nLoses: {Loses}\nDraws: {Draws}", font="TkFixedFont 15 bold", bg="white")
         self.editProfileButton = tk.Button(self, text="Edit Profile", bg="white", font="TkFixedFont 12", command=self.editprofile)    
         self.exitProfileButton = tk.Button(self, text="Exit", bg="white", font="TkFixedFont 12", command=profilewindow.destroy)
         self.title.grid(column=0, row=0, columnspan=2)
@@ -270,8 +269,40 @@ class profileMenu(tk.Frame):
         self.changePasswordButton.grid(column=0, row=3, sticky="news")
 
     def changeprofilepicture(self):
-        print("placeholder")
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.title = tk.Label(self, text="Change profile picture", bg="white", font="TkFixedFont 15 bold")
+        self.pathEntry = tk.Entry(self, width=60)
+        self.selectPathButton = tk.Button(self, text="Select image", bg="white", command=self.loadprofilepicturepath)
+        self.next = tk.Button(self, text="Next", bg="white", command=self.confirmprofilepicture)
+        self.back = tk.Button(self, text="Back", bg="white", command=self.__init__)
+        self.title.grid(column=0, row=0, columnspan=2)
+        self.pathEntry.grid(column=0, row=1, columnspan=2)
+        self.absDefaultPath = os.path.abspath(profilePicture)
+        self.pathEntry.insert(0, self.absDefaultPath)
+        self.selectPathButton.grid(column=1, row=2, sticky="e")
+        self.next.grid(column=1, row=3, sticky="news")
+        self.back.grid(column=0, row=3, sticky="news")
 
+    def loadprofilepicturepath(self):
+        filename = filedialog.askopenfilename(filetypes = (("Jpeg files", "*.jpg"), ("Png files", "*.png")))
+        self.pathEntry.delete(0, tk.END)
+        self.pathEntry.insert(0, filename)
+
+    def confirmprofilepicture(self):
+        try:
+            self.profilePicturePreDownsample = Image.open(self.pathEntry.get())
+            basewidth = 180
+            wpercent = (basewidth/float(self.profilePicturePreDownsample.size[0]))
+            hsize = int((float(self.profilePicturePreDownsample.size[1])*float(wpercent)))
+            self.profilePictureDownsample = self.profilePicturePreDownsample.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+            self.profilePictureDownsample.save(f"./usr/{currentUser}/profilePicture.gif")
+            global profilePicture
+            profilePicture = f"./usr/{currentUser}/profilePicture.gif"
+        except IOError:
+            self.notImageFormat = tk.Label(self, text="That is not a valid image", bg="red")
+            self.notImageFormat.grid(column=0, row=4, columnspan=2)
+                            #########################################################################################
     def changeaccountusername(self):
         for widget in self.winfo_children():
             widget.destroy()
@@ -290,7 +321,7 @@ class profileMenu(tk.Frame):
 
     def changeuser(self):
         if self.passwordInputForm.get() == self.passwordConfirmForm.get():
-            DataLocation = ("./usr/%s/AccountDetails.dat" % currentUser)
+            DataLocation = (f"./usr/{currentUser}/AccountDetails.dat")
             with open(DataLocation, "rb+") as UsrData:
                 Details = pickle.load(UsrData)
                 UsrData.close()
@@ -319,25 +350,29 @@ class profileMenu(tk.Frame):
     def confirmusernamechange(self):
         if currentUser == self.currentUserForm.get():
             if self.newUserForm.get() != " " and len(self.newUserForm.get()) > 0:
-                DataLocation = ("./usr/%s/AccountDetails.dat" % currentUser)
+                DataLocation = (f"./usr/{currentUser}/AccountDetails.dat")
                 with open(DataLocation, "rb+") as UsrData:
                     Details = pickle.load(UsrData)
                     UsrData.close()
+                newUser = self.newUserForm.get()
                 passvarHashed = Details[1]
-                usrVariables = [currentUser, passvarHashed, Wins, Loses, Draws, accountType, profilePicture]
+                if Details[6] != "./assests/Blank-Profile-Picture.pgm":
+                    profileUser = self.newUserForm.get()
+                    profilePicture = f"./usr/{profileUser}/Profile Picture.gif"
+                usrVariables = [newUser, passvarHashed, Wins, Loses, Draws, accountType, profilePicture]
                 with open(DataLocation, "wb+") as data:
                     pickle.dump(usrVariables, data, 0)
                     data.close()
-                os.rename("./usr/%s" % currentUser, "./usr/%s" % self.newUserForm.get())
+                os.rename(f"./usr/{currentUser}", f"./usr/{self.newUserForm.get()}")
                 global OldUsername
                 OldUsername = currentUser
                 self.inituserchange()
             else:
-                newUserInvalid = tk.Label(self, text="New username cannot be empty", bg="red")
-                newUserInvalid.grid(column=0, row=4, sticky="news", columnspan=2)
+                self.newUserInvalid = tk.Label(self, text="New username cannot be empty", bg="red")
+                self.newUserInvalid.grid(column=0, row=4, sticky="news", columnspan=2)
         else:
-            currentUserIncorrect = tk.Label(self, text="Current username is incorrect", bg="red")
-            currentUserIncorrect.grid(column=0, row=5, sticky="news", columnspan=2)
+            self.currentUserIncorrect = tk.Label(self, text="Current username is incorrect", bg="red")
+            self.currentUserIncorrect.grid(column=0, row=5, sticky="news", columnspan=2)
 
     def inituserchange(self):
         global currentUser
@@ -345,11 +380,15 @@ class profileMenu(tk.Frame):
         for widget in self.winfo_children():
             widget.destroy()
         self.title = tk.Label(self, text="Username Successfully changed", bg="white", font="TkFixedFont 15 bold")
-        self.subtitle = tk.Label(self, text="From %s --> %s" % (OldUsername, currentUser), bg="white", font="TkFixedFont 12 bold")
+        self.subtitle = tk.Label(self, text=f"From {OldUsername} --> {currentUser}", bg="white", font="TkFixedFont 12 bold")
+        #self.profileWarning = tk.Label(self, text="Due to limitations, your profile picture has been changed to the default picture", bg="white")
+        #self.profileWarningFix = tk.Label(self, text="Please change it again to access your profile profile picture", bg="white")
         self.quitButton = tk.Button(self, text="Exit", bg="white", command=profilewindow.destroy)
         self.title.grid(column=0, row=0)
         self.subtitle.grid(column=0, row=1)
-        self.quitButton.grid(column=0, row=2)
+        #self.profileWarning.grid(column=0, row=2)
+        #self.profileWarningFix.grid(column=0, row=3)
+        self.quitButton.grid(column=0, row=4)
     
     def changeaccountpassword(self):
         for widget in self.winfo_children():
@@ -369,7 +408,7 @@ class profileMenu(tk.Frame):
 
     def changepassword(self):
         if self.passwordInputForm.get() == self.passwordConfirmForm.get():
-            DataLocation = ("./usr/%s/AccountDetails.dat" % currentUser)
+            DataLocation = (f"./usr/{currentUser}/AccountDetails.dat")
             with open(DataLocation, "rb+") as UsrData:
                 Details = pickle.load(UsrData)
                 UsrData.close()
@@ -380,7 +419,7 @@ class profileMenu(tk.Frame):
                 self.newPasswordSubtitle = tk.Label(self, text="New password:", bg="white")
                 self.newPasswordForm = tk.Entry(self, show="*")
                 self.passwordConfirmSubtitle = tk.Label(self, text="Confirm password:", bg="white")
-                self.passwordConfirmForm = tk.Entry(self, show="0")
+                self.passwordConfirmForm = tk.Entry(self, show="*")
                 self.passwordChangeConfirm = tk.Button(self, text="Confirm Changes", bg="white", command=self.confirmpasswordchange)
                 self.title.grid(column=0, row=0, columnspan=2)
                 self.newPasswordSubtitle.grid(column=0, row=1)
@@ -396,8 +435,31 @@ class profileMenu(tk.Frame):
             self.passNotMatch.grid(column=0, row=5, sticky="news", columnspan=2)
 
     def confirmpasswordchange(self):
-        print("placeholder")
-        
+        if self.newPasswordForm.get() == self.passwordConfirmForm.get():
+            if self.newPasswordForm.get() != " " and len(self.newPasswordForm.get()) > 0:
+                DataLocation = (f"./usr/{currentUser}/AccountDetails.dat")
+                with open(DataLocation, "rb+") as UsrData:
+                    Details = pickle.load(UsrData)
+                    UsrData.close()
+                passvarHashed = hashlib.sha3_512(self.newPasswordForm.get().encode("utf-8")).hexdigest()
+                usrVariables = [currentUser, passvarHashed, Wins, Loses, Draws, accountType, profilePicture]
+                with open(DataLocation, "wb+") as data:
+                    pickle.dump(usrVariables, data, 0)
+                    data.close()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                self.title = tk.Label(self, text="Password successfuly changed", bg="white", font="TkFixedFont 16 bold")
+                self.closeButton = tk.Button(self, text="Close", bg="white", command=profilewindow.destroy)
+                self.title.grid(column=0, row=0)
+                self.closeButton.grid(column=0, row=1)
+            else:
+                newUserInvalid = tk.Label(self, text="New password cannot be empty", bg="red")
+                newUserInvalid.grid(column=0, row=4, sticky="news", columnspan=2)
+        else:
+            self.newPassNotMatch = tk.Label(self, text="New passwords do not match", bg="red")
+            self.newPassNotMatch.grid(column=0, row=5, sticky="news", columnspan=2)
+
+currentUser = ""
 startwindow = tk.Tk()
 startMenu(startwindow).pack(fill="both", expand=True)
 startwindow.mainloop()
